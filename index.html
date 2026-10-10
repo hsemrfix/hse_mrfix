@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HSE Welcome System — KARTAŞ KİMYA</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #6366f1;
+      --success: #22c55e;
+      --danger: #ef4444;
+      --text: #1e293b;
+      --text-secondary: #64748b;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(180deg, #e0e7ff 0%, #f3e8ff 40%, #e0e7ff 100%);
+      background-attachment: fixed;
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .app-wrapper {
+      width: 100%;
+      max-width: 540px;
+    }
+
+    .screen {
+      display: none;
+      width: 100%;
+      min-height: 100vh;
+    }
+
+    .screen.active {
+      display: block;
+      animation: fadeIn .35s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    #screenLang {
+      display: none;
+      padding: 12px;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #screenLang.active {
+      display: flex;
+    }
+
+    .flag-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: 100%;
+    }
+
+    .flag-item {
+      width: 100%;
+      height: 24vh;
+      min-height: 120px;
+      max-height: 180px;
+      border-radius: 24px;
+      overflow: hidden;
+      cursor: pointer;
+      position: relative;
+      box-shadow: 0 10px 30px #00000019;
+      border: 1px solid #ffffff40;
+    }
+
+    .flag-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .soft-card {
+      background: #fffffff5;
+      border-radius: 28px;
+      box-shadow: 0 24px 64px #00000014;
+      margin: 16px;
+      overflow: hidden;
+      backdrop-filter: blur(10px);
+    }
+
+    .form-hero {
+      text-align: center;
+      padding: 45px 24px 35px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+    }
+
+    .form-hero h1 {
+      font-size: 26px;
+      font-weight: 800;
+    }
+
+    .form-hero p {
+      font-size: 15px;
+      margin-top: 8px;
+    }
+
+    .form-body {
+      padding: 28px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid #e2e8f0;
+      border-radius: 14px;
+      font-size: 16px;
+      font-family: inherit;
+      background: #f8fafc;
+      color: var(--text);
+    }
+
+    input[type="text"]:focus {
+      outline: none;
+      border-color: #a5b4fc;
+      background: white;
+    }
+
+    input.error {
+      border-color: #fca5a5;
+      background: #fef2f2;
+    }
+
+    .error-msg {
+      color: var(--danger);
+      font-size: 12px;
+      margin-top: 6px;
+      display: none;
+    }
+
+    .error-msg.visible {
+      display: block;
+    }
+
+    .hp-field {
+      position: absolute;
+      left: -9999px;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+    }
+
+    .timer-bar {
+      position: fixed;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 540px;
+      z-index: 100;
+      padding: 10px 16px 12px;
+      background: #fffffff2;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 4px 16px #00000018;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 700;
+      color: #3730a3;
+    }
+
+    .timer-bar[hidden] {
+      display: none;
+    }
+
+    .timer-bar.done {
+      color: #15803d;
+    }
+
+    .timer-track {
+      height: 6px;
+      margin-top: 8px;
+      background: #e2e8f0;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .timer-fill {
+      width: 0;
+      height: 100%;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      transition: width .25s linear;
+    }
+
+    .timer-bar.done .timer-fill {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+    }
+
+    #screenHSE {
+      padding-top: 56px;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 16px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: white;
+    }
+
+    .btn:disabled {
+      background: #cbd5e1;
+      color: #64748b;
+      cursor: not-allowed;
+    }
+
+    .back-link {
+      display: block;
+      text-align: center;
+      margin-top: 18px;
+      color: var(--text-secondary);
+      font-size: 14px;
+      text-decoration: none;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    .hse-header {
+      text-align: center;
+      padding: 35px 24px 25px;
+    }
+
+    .hse-header h1 {
+      font-size: 22px;
+      font-weight: 800;
+    }
+
+    .hse-header p {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-top: 6px;
+    }
+
+    .hse-body {
+      padding: 0 24px 24px;
+    }
+
+    .hse-img-card {
+      border-radius: 20px;
+      overflow: hidden;
+      margin-bottom: 16px;
+      box-shadow: 0 12px 32px #0000001f;
+      background: white;
+      position: relative;
+      border: 1px solid #e2e8f0;
+    }
+
+    .hse-img-card img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .hse-step-badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      font-size: 13px;
+      font-weight: 800;
+      padding: 6px 14px;
+      border-radius: 12px;
+      z-index: 2;
+    }
+
+    .hse-img-error {
+      padding: 24px 16px;
+      text-align: center;
+      color: #b91c1c;
+      font-size: 13px;
+      background: #fef2f2;
+      overflow-wrap: anywhere;
+    }
+
+    .hse-img-error[hidden] {
+      display: none;
+    }
+
+    .checkbox-wrap {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin: 20px 24px 24px;
+      padding: 18px;
+      background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
+      border-radius: 16px;
+      border: 1px solid #a5b4fc;
+    }
+
+    .checkbox-wrap input {
+      width: 22px;
+      height: 22px;
+      margin-top: 2px;
+      accent-color: #6366f1;
+      flex-shrink: 0;
+    }
+
+    .checkbox-wrap label {
+      font-size: 14px;
+      font-weight: 600;
+      color: #3730a3;
+      text-transform: none;
+      letter-spacing: 0;
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    .hse-footer {
+      padding: 0 24px 28px;
+    }
+
+    .success-wrap {
+      text-align: center;
+      padding: 56px 32px 40px;
+    }
+
+    .success-ring {
+      width: 90px;
+      height: 90px;
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+      color: white;
+      font-size: 44px;
+    }
+
+    .success-title {
+      font-size: 24px;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+
+    .success-footer {
+      padding: 0 28px 32px;
+    }
+
+    .spinner-overlay {
+      position: fixed;
+      inset: 0;
+      background: #fffffff0;
+      backdrop-filter: blur(8px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      z-index: 9999;
+    }
+
+    .spinner-overlay.active {
+      display: flex;
+    }
+
+    .spinner {
+      width: 52px;
+      height: 52px;
+      border: 4px solid #e2e8f0;
+      border-top-color: #6366f1;
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .spinner-text {
+      margin-top: 18px;
+      color: var(--text-secondary);
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    @media (max-width: 400px) {
+      .flag-item {
+        height: 22vh;
+        min-height: 100px;
+        border-radius: 20px;
+      }
+
+      .form-hero h1 {
+        font-size: 22px;
+      }
+
+      .form-body {
+        padding: 20px;
+      }
+
+      .hse-body {
+        padding: 0 16px 20px;
+      }
+
+      .checkbox-wrap {
+        margin: 16px 16px 20px;
+      }
+
+      .hse-footer {
+        padding: 0 16px 20px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="timer-bar" id="timerBar" hidden>
+    <div id="timerText"></div>
+    <div class="timer-track"><div class="timer-fill" id="timerFill"></div></div>
+  </div>
+
+  <div class="spinner-overlay" id="spinner">
+    <div class="spinner"></div>
+    <div class="spinner-text" id="spinnerText">Сохранение...</div>
+  </div>
+
+  <div class="app-wrapper">
+
+    <div class="screen active" id="screenLang">
+      <div class="flag-list" id="flagList"></div>
+    </div>
+
+    <div class="screen" id="screenForm">
+      <div class="soft-card">
+        <div class="form-hero">
+          <h1 id="formTitle">Регистрация посетителя</h1>
+          <p id="formSubtitle">Заполните все поля</p>
+        </div>
+
+        <div class="form-body">
+          <form id="visitorForm">
+            <div class="form-group">
+              <label for="firstName" id="lblFirstName">Имя</label>
+              <input type="text" id="firstName" autocomplete="given-name" required>
+              <div class="error-msg" id="errFirstName"></div>
+            </div>
+
+            <div class="form-group">
+              <label for="lastName" id="lblLastName">Фамилия</label>
+              <input type="text" id="lastName" autocomplete="family-name" required>
+              <div class="error-msg" id="errLastName"></div>
+            </div>
+
+            <div class="form-group">
+              <label for="company" id="lblCompany">Компания</label>
+              <input type="text" id="company" autocomplete="organization" required>
+              <div class="error-msg" id="errCompany"></div>
+            </div>
+
+            <div class="form-group">
+              <label for="department" id="lblDepartment">Департамент</label>
+              <input type="text" id="department" required>
+              <div class="error-msg" id="errDepartment"></div>
+            </div>
+
+            <div class="hp-field" aria-hidden="true">
+              <label for="hpFax">Fax</label>
+              <input type="text" id="hpFax" name="fax" tabindex="-1" autocomplete="off">
+            </div>
+
+            <button type="button" class="btn btn-primary" id="btnContinue" onclick="goToHSE()">Продолжить</button>
+            <a class="back-link" onclick="showScreen('screenLang')" id="btnBackLang">← Назад к выбору языка</a>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="screen" id="screenHSE">
+      <div class="soft-card">
+        <div class="hse-header">
+          <h1 id="hseTitle">Инструктаж по безопасности</h1>
+          <p id="hseSubtitle">Ознакомьтесь с правилами перед входом</p>
+        </div>
+
+        <div class="hse-body" id="hseContent"></div>
+
+        <div class="checkbox-wrap">
+          <input type="checkbox" id="hseCheck" onchange="toggleConfirm()">
+          <label for="hseCheck" id="lblHseCheck">Я ознакомлен(а) с правилами безопасности и обязуюсь их соблюдать</label>
+        </div>
+
+        <div class="hse-footer">
+          <button class="btn btn-success" id="btnConfirm" disabled onclick="submitData()">Подтвердить регистрацию</button>
+          <a class="back-link" onclick="showScreen('screenForm')" id="btnBackForm">← Назад к форме</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="screen" id="screenSuccess">
+      <div class="soft-card">
+        <div class="success-wrap">
+          <div class="success-ring">✓</div>
+          <div class="success-title" id="successTitle">Регистрация завершена!</div>
+        </div>
+        <div class="success-footer">
+          <button class="btn btn-primary" onclick="resetAll()" id="btnNewReg">Новая регистрация</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const CONFIG = {
+      languages: [
+        {
+          code: 'az',
+          name: 'Azərbaycan',
+          flag: 'https://flagcdn.com/w640/az.png',
+          instructions: [
+            "assets/instructions/az/01-scan.jpg",
+            "assets/instructions/az/02-registration.jpg",
+            "assets/instructions/az/03-ppe.jpg",
+            "assets/instructions/az/04-ppe-usage.jpg",
+            "assets/instructions/az/05-walkways.jpg",
+            "assets/instructions/az/06-vehicles.jpg",
+            "assets/instructions/az/07-hazardous.jpg",
+            "assets/instructions/az/08-prohibitions.jpg",
+            "assets/instructions/az/09-assembly.jpg",
+            "assets/instructions/az/10-smoking.jpg"
+          ]
+        },
+        {
+          code: 'tr',
+          name: 'Türkçe',
+          flag: 'https://flagcdn.com/w640/tr.png',
+          instructions: [
+            "assets/instructions/tr/01-scan.jpg",
+            "assets/instructions/tr/02-registration.jpg",
+            "assets/instructions/tr/03-ppe.jpg",
+            "assets/instructions/tr/04-ppe-usage.jpg",
+            "assets/instructions/tr/05-walkways.jpg",
+            "assets/instructions/tr/06-vehicles.jpg",
+            "assets/instructions/tr/07-hazardous.jpg",
+            "assets/instructions/tr/08-prohibitions.jpg",
+            "assets/instructions/tr/09-assembly.jpg",
+            "assets/instructions/tr/10-smoking.jpg"
+          ]
+        },
+        {
+          code: 'ru',
+          name: 'Русский',
+          flag: 'https://flagcdn.com/w640/ru.png',
+          instructions: [
+            "assets/instructions/ru/01-scan.jpg",
+            "assets/instructions/ru/02-registration.jpg",
+            "assets/instructions/ru/03-ppe.jpg",
+            "assets/instructions/ru/04-ppe-usage.jpg",
+            "assets/instructions/ru/05-walkways.jpg",
+            "assets/instructions/ru/06-vehicles.jpg",
+            "assets/instructions/ru/07-hazardous.jpg",
+            "assets/instructions/ru/08-prohibitions.jpg",
+            "assets/instructions/ru/09-assembly.jpg",
+            "assets/instructions/ru/10-smoking.jpg"
+          ]
+        },
+        {
+          code: 'en',
+          name: 'English',
+          flag: 'https://flagcdn.com/w640/gb.png',
+          instructions: [
+            "assets/instructions/en/01-scan.jpg",
+            "assets/instructions/en/02-registration.jpg",
+            "assets/instructions/en/03-ppe.jpg",
+            "assets/instructions/en/04-ppe-usage.jpg",
+            "assets/instructions/en/05-walkways.jpg",
+            "assets/instructions/en/06-vehicles.jpg",
+            "assets/instructions/en/07-hazardous.jpg",
+            "assets/instructions/en/08-prohibitions.jpg",
+            "assets/instructions/en/09-assembly.jpg",
+            "assets/instructions/en/10-smoking.jpg"
+          ]
+        }
+      ],
+
+      security: {
+        minReadMs: 30000
+      },
+
+      api: {
+        // Вставьте URL развёртывания Apps Script (заканчивается на /exec)
+        googleScriptUrl: 'https://script.google.com/macros/s/AKfycbxXgSdd54fVtfhSCIUvOKw-1ts9N6u_xdFZZmgJ9VJ8aKDdvVumscfs0x9EtKpEUV0ldQ/exec'
+      }
+    };
+
+    const i18n = {
+      AZ: {
+        formTitle:'Ziyarətçi qeydiyyatı',
+        formSubtitle:'Bütün sahələri doldurun',
+        lblFirstName:'Ad',
+        lblLastName:'Soyad',
+        lblCompany:'Şirkət',
+        lblDepartment:'Hansı departamentə gəldiniz?',
+        btnContinue:'Davam et',
+        btnBackLang:'← Dil seçiminə qayıt',
+        hseTitle:'Təhlükəsizlik təlimatı',
+        hseSubtitle:'Daxil olmadan əvvəl qaydaları oxuyun',
+        lblHseCheck:'Təhlükəsizlik qaydaları ilə tanış oldum və onlara riayət edəcəyəm',
+        btnConfirm:'Qeydiyyatı təsdiqlə',
+        btnBackForm:'← Formaya qayıt',
+        successTitle:'Qeydiyyat tamamlandı!',
+        btnNewReg:'Yeni qeydiyyat',
+        errRequired:'Bu sahə tələb olunur',
+        errMinLength:'Ən azı 2 simvol daxil edin',
+        errTooFast:'Təhlükəsizlik təlimatını oxuyun, sonra təsdiqləyin',
+        timerWait:'Təlimatı oxuyun: {s} san. qalıb',
+        timerDone:'Qeydiyyatı indi təsdiqləyə bilərsiniz',
+        alreadyTitle:'Siz artıq təlimatdan keçmisiniz. Təkrar qeydiyyat tələb olunmur'
+      },
+      TR: {
+        formTitle:'Ziyaretçi Kaydı',
+        formSubtitle:'Tüm alanları doldurun',
+        lblFirstName:'Ad',
+        lblLastName:'Soyad',
+        lblCompany:'Şirket',
+        lblDepartment:'Hangi departmana geldiniz?',
+        btnContinue:'Devam Et',
+        btnBackLang:'← Dil seçimine dön',
+        hseTitle:'Güvenlik Eğitimi',
+        hseSubtitle:'Girmeden önce kuralları okuyun',
+        lblHseCheck:'Güvenlik kurallarını okudum ve bunlara uyacağım',
+        btnConfirm:'Kaydı Onayla',
+        btnBackForm:'← Forma dön',
+        successTitle:'Kayıt tamamlandı!',
+        btnNewReg:'Yeni kayıt',
+        errRequired:'Bu alan zorunludur',
+        errMinLength:'En az 2 karakter girin',
+        errTooFast:'Lütfen onaylamadan önce güvenlik eğitimini okuyun',
+        timerWait:'Eğitimi okuyun: {s} sn kaldı',
+        timerDone:'Artık kaydı onaylayabilirsiniz',
+        alreadyTitle:'Eğitimi zaten tamamladınız. Tekrar kayıt gerekmiyor'
+      },
+      RU: {
+        formTitle:'Регистрация посетителя',
+        formSubtitle:'Заполните все поля',
+        lblFirstName:'Имя',
+        lblLastName:'Фамилия',
+        lblCompany:'Компания',
+        lblDepartment:'К какому департаменту пришёл посетитель',
+        btnContinue:'Продолжить',
+        btnBackLang:'← Назад к выбору языка',
+        hseTitle:'Инструктаж по безопасности',
+        hseSubtitle:'Ознакомьтесь с правилами перед входом',
+        lblHseCheck:'Я ознакомлен(а) с правилами безопасности и обязуюсь их соблюдать',
+        btnConfirm:'Подтвердить регистрацию',
+        btnBackForm:'← Назад к форме',
+        successTitle:'Регистрация завершена!',
+        btnNewReg:'Новая регистрация',
+        errRequired:'Это поле обязательно',
+        errMinLength:'Введите минимум 2 символа',
+        errTooFast:'Пожалуйста, ознакомьтесь с инструктажем перед подтверждением',
+        timerWait:'Изучите инструктаж: осталось {s} сек.',
+        timerDone:'Теперь можно подтвердить регистрацию',
+        alreadyTitle:'Вы уже прошли инструктаж. Повторная регистрация не требуется'
+      },
+      EN: {
+        formTitle:'Visitor Registration',
+        formSubtitle:'Please fill in all fields',
+        lblFirstName:'First Name',
+        lblLastName:'Last Name',
+        lblCompany:'Company',
+        lblDepartment:'Department being visited',
+        btnContinue:'Continue',
+        btnBackLang:'← Back to Language Selection',
+        hseTitle:'Safety Briefing',
+        hseSubtitle:'Review the rules before entry',
+        lblHseCheck:'I have read and understood the safety rules and agree to comply',
+        btnConfirm:'Confirm Registration',
+        btnBackForm:'← Back to Form',
+        successTitle:'Registration Complete!',
+        btnNewReg:'New Registration',
+        errRequired:'This field is required',
+        errMinLength:'Please enter at least 2 characters',
+        errTooFast:'Please read the safety briefing before confirming',
+        timerWait:'Study the briefing: {s} sec left',
+        timerDone:'You can now confirm registration',
+        alreadyTitle:'You have already completed the briefing. No re-registration required'
+      }
+    };
+
+    let currentLang = 'RU';
+    let currentLangConfig = null;
+    let formData = {};
+    let isSubmitting = false;
+    let hseShownAt = 0;
+
+    function init() {
+      const flagList = document.getElementById('flagList');
+      flagList.replaceChildren();
+
+      CONFIG.languages.forEach(function(lang) {
+        const div = document.createElement('div');
+        div.className = 'flag-item';
+        div.setAttribute('role', 'button');
+        div.setAttribute('tabindex', '0');
+
+        const img = document.createElement('img');
+        img.src = lang.flag;
+        img.alt = lang.name;
+        img.loading = 'eager';
+
+        div.appendChild(img);
+
+        div.addEventListener('click', function() {
+          selectLang(lang.code.toUpperCase());
+        });
+
+        div.addEventListener('keydown', function(event) {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            selectLang(lang.code.toUpperCase());
+          }
+        });
+
+        flagList.appendChild(div);
+      });
+    }
+
+    function selectLang(lang) {
+      currentLang = lang;
+      currentLangConfig = CONFIG.languages.find(function(item) {
+        return item.code.toUpperCase() === lang;
+      });
+
+      applyLang();
+      showScreen('screenForm');
+    }
+
+    function applyLang() {
+      const t = i18n[currentLang];
+      if (!t) return;
+
+      Object.keys(t).forEach(function(id) {
+        const el = document.getElementById(id);
+        if (el) el.textContent = t[id];
+      });
+    }
+
+    function showScreen(id) {
+      document.querySelectorAll('.screen').forEach(function(screen) {
+        screen.classList.remove('active');
+      });
+
+      const target = document.getElementById(id);
+      if (target) target.classList.add('active');
+
+      if (id !== 'screenHSE') stopTimer();
+
+      window.scrollTo(0, 0);
+    }
+
+    function showError(id, msg) {
+      const input = document.getElementById(id);
+      const error = document.getElementById('err' + id.charAt(0).toUpperCase() + id.slice(1));
+
+      if (input) input.classList.add('error');
+
+      if (error) {
+        error.textContent = msg;
+        error.classList.add('visible');
+      }
+    }
+
+    function clearErrors() {
+      document.querySelectorAll('input[type="text"]').forEach(function(input) {
+        input.classList.remove('error');
+      });
+
+      document.querySelectorAll('.error-msg').forEach(function(error) {
+        error.textContent = '';
+        error.classList.remove('visible');
+      });
+    }
+
+    function goToHSE() {
+      clearErrors();
+
+      const t = i18n[currentLang];
+
+      const firstName = document.getElementById('firstName').value.trim();
+      const lastName = document.getElementById('lastName').value.trim();
+      const company = document.getElementById('company').value.trim();
+      const department = document.getElementById('department').value.trim();
+
+      let valid = true;
+
+      [
+        ['firstName', firstName],
+        ['lastName', lastName]
+      ].forEach(function(item) {
+        if (!item[1]) {
+          showError(item[0], t.errRequired);
+          valid = false;
+        } else if (item[1].length < 2) {
+          showError(item[0], t.errMinLength);
+          valid = false;
+        }
+      });
+
+      if (!company) {
+        showError('company', t.errRequired);
+        valid = false;
+      }
+
+      if (!department) {
+        showError('department', t.errRequired);
+        valid = false;
+      }
+
+      if (!valid) return;
+
+      if (!currentLangConfig || !currentLangConfig.instructions) {
+        alert('Не найден список фотографий для выбранного языка.');
+        return;
+      }
+
+      const photos = currentLangConfig.instructions.map(function(src, index) {
+        return {
+          step: index + 1,
+          url: new URL(src, document.baseURI).href,
+          loaded: false
+        };
+      });
+
+      formData = {
+        firstName: firstName,
+        lastName: lastName,
+        company: company,
+        department: department,
+        lang: currentLang,
+        instructionPhotos: photos
+      };
+
+      const hseContent = document.getElementById('hseContent');
+      hseContent.replaceChildren();
+
+      photos.forEach(function(photo) {
+        const card = document.createElement('div');
+        card.className = 'hse-img-card';
+
+        const badge = document.createElement('div');
+        badge.className = 'hse-step-badge';
+        badge.textContent = photo.step + '/10';
+
+        const img = document.createElement('img');
+        img.alt = 'HSE Step ' + photo.step;
+        img.loading = 'eager';
+        img.decoding = 'async';
+
+        const error = document.createElement('div');
+        error.className = 'hse-img-error';
+        error.hidden = true;
+
+        // URL показывается отдельно, если фото не загрузилось.
+        error.textContent = 'Не удалось загрузить: ' + photo.url;
+
+        img.onload = function() {
+          photo.loaded = true;
+          img.hidden = false;
+          error.hidden = true;
+        };
+
+        img.onerror = function() {
+          photo.loaded = false;
+          img.hidden = true;
+          error.hidden = false;
+          console.error('Не удалось загрузить изображение:', photo.url);
+        };
+
+        card.appendChild(badge);
+        card.appendChild(img);
+        card.appendChild(error);
+        hseContent.appendChild(card);
+
+        img.src = photo.url;
+      });
+
+      document.getElementById('hseCheck').checked = false;
+      toggleConfirm();
+      showScreen('screenHSE');
+      startTimer();
+    }
+
+    let timerId = null;
+
+    function readSecondsLeft() {
+      if (!hseShownAt) return 0;
+
+      return Math.max(
+        0,
+        Math.ceil((CONFIG.security.minReadMs - (Date.now() - hseShownAt)) / 1000)
+      );
+    }
+
+    function stopTimer() {
+      if (timerId !== null) {
+        clearInterval(timerId);
+        timerId = null;
+      }
+
+      document.getElementById('timerBar').hidden = true;
+    }
+
+    function updateTimer() {
+      const t = i18n[currentLang];
+      const left = readSecondsLeft();
+      const progress = Math.min(1, (Date.now() - hseShownAt) / CONFIG.security.minReadMs);
+
+      document.getElementById('timerFill').style.width = (progress * 100) + '%';
+      document.getElementById('timerText').textContent =
+        left > 0 ? t.timerWait.replace('{s}', left) : t.timerDone;
+      document.getElementById('timerBar').classList.toggle('done', left === 0);
+
+      toggleConfirm();
+
+      if (left === 0 && timerId !== null) {
+        clearInterval(timerId);
+        timerId = null;
+      }
+    }
+
+    function startTimer() {
+      stopTimer();
+      hseShownAt = Date.now();
+      document.getElementById('timerBar').hidden = false;
+      updateTimer();
+      timerId = setInterval(updateTimer, 250);
+    }
+
+    function toggleConfirm() {
+      document.getElementById('btnConfirm').disabled =
+        !document.getElementById('hseCheck').checked ||
+        isSubmitting ||
+        readSecondsLeft() > 0;
+    }
+
+    function setLoading(loading, message) {
+      document.getElementById('spinnerText').textContent =
+        message || 'Сохранение...';
+
+      document.getElementById('spinner').classList.toggle('active', loading);
+      toggleConfirm();
+    }
+
+    function submitData() {
+      if (isSubmitting) return;
+
+      if (!document.getElementById('hseCheck').checked) {
+        alert(i18n[currentLang].lblHseCheck);
+        return;
+      }
+
+      const elapsedMs = Date.now() - hseShownAt;
+
+      if (elapsedMs < CONFIG.security.minReadMs) {
+        alert(i18n[currentLang].errTooFast);
+        return;
+      }
+
+      if (CONFIG.api.googleScriptUrl === 'PASTE_WEB_APP_URL') {
+        alert('Не задан googleScriptUrl в CONFIG.');
+        return;
+      }
+
+      isSubmitting = true;
+      setLoading(true, 'Сохранение...');
+
+      fetch(CONFIG.api.googleScriptUrl, {
+        method: 'POST',
+        mode: 'cors',
+        credentials: 'omit',
+        cache: 'no-store',
+        headers: {
+          'Content-Type': 'text/plain;charset=UTF-8'
+        },
+        body: JSON.stringify({
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          company: formData.company,
+          department: formData.department,
+          lang: formData.lang,
+          fax: document.getElementById('hpFax').value,
+          elapsedMs: elapsedMs
+        })
+      }).then(function(response) {
+        return response.text().then(function(text) {
+          let result;
+
+          try {
+            result = JSON.parse(text);
+          } catch (error) {
+            throw new Error('Сервер вернул не JSON. HTTP ' + response.status);
+          }
+
+          if (!response.ok || !result || result.success !== true) {
+            throw new Error(
+              result && result.message
+                ? result.message
+                : 'Сервер не подтвердил регистрацию.'
+            );
+          }
+
+          return result;
+        });
+      }).then(function(result) {
+        const t = i18n[currentLang];
+
+        document.getElementById('successTitle').textContent =
+          result.duplicate ? t.alreadyTitle : t.successTitle;
+        showScreen('screenSuccess');
+      }).catch(function(error) {
+        console.error('Ошибка отправки:', error);
+        alert('Не удалось завершить регистрацию.\n\n' + (error.message || 'Неизвестная ошибка'));
+      }).finally(function() {
+        isSubmitting = false;
+        setLoading(false);
+        toggleConfirm();
+      });
+    }
+
+    function resetAll() {
+      document.getElementById('visitorForm').reset();
+      document.getElementById('hseCheck').checked = false;
+
+      formData = {};
+      isSubmitting = false;
+
+      clearErrors();
+      toggleConfirm();
+      showScreen('screenLang');
+    }
+
+    init();
+  </script>
+</body>
+</html>
